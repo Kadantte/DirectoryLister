@@ -1,5 +1,5 @@
 name: Directory Lister Test Suite
-on: [push]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   asset-compilation:
@@ -24,7 +24,7 @@ jobs:
         run: npm run production --verbose
 
       - name: Lint JavaScript Files
-        run: npx eslint app/resources/js/**/*.{js,vue}
+        run: npx eslint app/resources/js/**/*.js
 
   coding-standards:
     name: Coding Standards
@@ -67,7 +67,7 @@ jobs:
 
     strategy:
       matrix:
-        php-versions: ['7.2', '7.3', '7.4', '8.0']
+        php-versions: ['7.3', '7.4', '8.0']
 
     steps:
       - name: Checkout Repository

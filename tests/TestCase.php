@@ -2,9 +2,9 @@
 
 namespace Tests;
 
+use App\Bootstrap\BootManager;
 use App\Config;
 use DI\Container;
-use DI\ContainerBuilder;
 use Dotenv\Dotenv;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -22,13 +22,16 @@ class TestCase extends BaseTestCase
     protected $testFilesPath = __DIR__ . '/_files';
 
     /** This method is called before each test. */
-    public function setUp(): void
+    protected function setUp(): void
     {
+        parent::setUp();
+
         Dotenv::createUnsafeImmutable(__DIR__)->safeLoad();
 
-        $this->container = (new ContainerBuilder)->addDefinitions(
-            ...glob(dirname(__DIR__) . '/app/config/*.php')
-        )->build();
+        $this->container = BootManager::createContainer(
+            dirname(__DIR__) . '/app/config',
+            dirname(__DIR__) . '/app/cache'
+        );
 
         $this->config = new Config($this->container);
         $this->cache = new ArrayAdapter($this->config->get('cache_lifetime'));
@@ -41,6 +44,6 @@ class TestCase extends BaseTestCase
     /** Get the file path to a test file. */
     protected function filePath(string $filePath): string
     {
-        return realpath($this->testFilesPath . '/' . $filePath);
+        return sprintf('%s/%s', $this->testFilesPath, $filePath);
     }
 }

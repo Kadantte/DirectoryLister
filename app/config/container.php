@@ -4,8 +4,6 @@ use App\Factories;
 use App\Middlewares;
 use App\SortMethods;
 use App\ViewFunctions;
-use Middlewares as HttpMiddlewares;
-use Psr\Container\ContainerInterface;
 
 return [
     /** Path definitions */
@@ -22,10 +20,12 @@ return [
     'app_files' => ['app', 'index.php', '.hidden'],
 
     /** Array of application middlewares */
-    'middlewares' => function (ContainerInterface $container): array {
+    'middlewares' => function (): array {
         return [
             Middlewares\WhoopsMiddleware::class,
-            new HttpMiddlewares\Expires($container->get('http_expires')),
+            Middlewares\PruneCacheMiddleware::class,
+            Middlewares\CacheControlMiddleware::class,
+            Middlewares\RegisterGlobalsMiddleware::class,
         ];
     },
 
